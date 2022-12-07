@@ -4,11 +4,11 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-
+const logger = require('./middleware/logger');
+const v1Routes = require('./routes/v1');
 // Esoteric Resources
 const errorHandler = require('./error-handlers/500.js');
 const notFound = require('./error-handlers/404.js');
-const authRoutes = require('./auth/routes.js');
 
 // Prepare the express app
 const app = express();
