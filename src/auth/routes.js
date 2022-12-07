@@ -2,7 +2,6 @@
 
 const express = require('express');
 const authRouter = express.Router();
-const v1Routes = require('./routes/v1.js');
 const { users } = require('./models');
 const basicAuth = require('./middleware/basic.js')
 const bearerAuth = require('./middleware/bearer.js')
