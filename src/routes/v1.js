@@ -23,7 +23,7 @@ router.param('model', (req, res, next) => {
 router.get('/secret', bearerAuth, handleSecret);
 router.post('/signup', handleSignup);
 router.post('/signin', basicAuth, handleSignin);
-router.get('/users', bearerAuth, handleUsers);
+router.get('/users', handleUsers);
 router.get('/:model', bearerAuth, handleGetAll);
 router.get('/:model/:id', bearerAuth, handleGetOne);
 router.post('/:model', bearerAuth, handleCreate);
