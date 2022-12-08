@@ -13,6 +13,11 @@ beforeAll(async () => {
     password: 'password',
     role: 'admin',
   });
+  await users.create({
+    username: 'tester2',
+    password: 'password',
+    role: 'user',
+  });
 });
 
 afterAll(async () => {
@@ -21,6 +26,10 @@ afterAll(async () => {
 
 const getToken = async () => {
   return await request.post('/api/v1/signin').auth('tester1', 'password');
+};
+
+const getTokenUser = async () => {
+  return await request.post('/api/v1/signin').auth('tester2', 'password');
 };
 
 const addOneFood = async (foodItem) => {
@@ -37,9 +46,10 @@ const addOneFood = async (foodItem) => {
 
 describe('AUTH Routes', () => {
 
-  test('Finds a user', async () => {
+  test('Finds all users', async () => {
     let users = await request.get('/api/v1/users');
-    expect(users.text).toEqual('[\"tester1\"]');
+    expect(users.body[0]).toEqual('tester1');
+    expect(users.body).toHaveLength(2);
     expect(users.status).toBe(200);
   });
 
@@ -165,4 +175,44 @@ describe('V2 (Authenticated API Routes)', () => {
     expect(sameFood.status).toBe(200);
   });
 
+  test('if no permission will not delete', async () => {
+    const admin = await getTokenUser();
+    let auth = admin.body.user.token;
+    let food = await request.delete('/api/v2/food/1').set('Authorization', 'bearer ' + auth);
+    expect(food.body.message).toEqual('Access Denied');
+    expect(food.status).toBe(500);
+
+    let sameFood = await request.get('/api/v2/food/1').set('Authorization', 'bearer ' + auth);
+    expect(sameFood.status).toBe(200);
+  });
+
+  test('if no permission will not update', async () => {
+    const admin = await getTokenUser();
+    let auth = admin.body.user.token;
+    let food = await request.put('/api/v2/food/1').send({
+      name: 'notBanana',
+      calories: 100,
+      type: 'fruit',
+    }).set('Authorization', 'bearer ' + auth);
+    expect(food.body.message).toEqual('Access Denied');
+    expect(food.status).toBe(500);
+
+    let sameFood = await request.get('/api/v2/food/1').set('Authorization', 'bearer ' + auth);
+    console.log(sameFood.body);
+    expect(sameFood.status).toBe(200);
+    expect(sameFood.body.name).toEqual('apple');
+  });
+
+  test('cannot create an item if no permission', async () => {
+    const admin = await getTokenUser();
+    let auth = admin.body.user.token;
+    let error = await request.post('/api/v1/food').send({
+      name: 'apple',
+      calories: 100,
+      type: 'fruit',
+    }).set('Authorization', 'bearer ' + auth);
+
+    expect(error.body).toEqual('Access Denied');
+    expect(error.status).toBe(500);
+  });
 });
