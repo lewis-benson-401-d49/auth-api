@@ -10,8 +10,8 @@ In this final phase, the new requirement is to extend the restrictive capabiliti
 
 ### Links and Resources
 
-- [ci/cd]() (GitHub Actions)
-- [server-prod]()
+- [ci/cd](https://github.com/tm-LBenson/auth-api/actions) (GitHub Actions)
+- [server-prod](https://d49-auth-api.onrender.com)
 
 ### Setup
 
