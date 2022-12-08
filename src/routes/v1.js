@@ -1,9 +1,13 @@
 'use strict';
 
 const express = require('express');
-const dataModules = require('../../../api-server/src/models');
-
+const dataModules = require('../auth/models');
+const bearerAuth = require('../auth/middleware/bearer');
 const router = express.Router();
+const { users } = require('../auth/models');
+const basicAuth = require('../auth/middleware/basic');
+const permissions = require('../auth/middleware/acl.js');
+
 
 router.param('model', (req, res, next) => {
   const modelName = req.params.model;
@@ -14,7 +18,10 @@ router.param('model', (req, res, next) => {
     next('Invalid Model');
   }
 });
-
+router.get('/secret', bearerAuth, handleSecret);
+router.post('/signup', handleSignup);
+router.post('/signin', basicAuth, handleSignin);
+router.get('/users', bearerAuth, permissions('delete'), handleUsers);
 router.get('/:model', handleGetAll);
 router.get('/:model/:id', handleGetOne);
 router.post('/:model', handleCreate);
@@ -28,7 +35,7 @@ async function handleGetAll(req, res) {
 
 async function handleGetOne(req, res) {
   const id = req.params.id;
-  let theRecord = await req.model.get(id)
+  let theRecord = await req.model.get(id);
   res.status(200).json(theRecord);
 }
 
@@ -41,7 +48,7 @@ async function handleCreate(req, res) {
 async function handleUpdate(req, res) {
   const id = req.params.id;
   const obj = req.body;
-  let updatedRecord = await req.model.update(id, obj)
+  let updatedRecord = await req.model.update(id, obj);
   res.status(200).json(updatedRecord);
 }
 
@@ -51,5 +58,36 @@ async function handleDelete(req, res) {
   res.status(200).json(deletedRecord);
 }
 
+function handleSecret(req, res) {
+  res.status(200).send('Welcome to the secret area');
+}
+
+async function handleSignup(req, res, next) {
+  try {
+    let userRecord = await users.create(req.body);
+    const output = {
+      user: userRecord,
+      token: userRecord.token,
+    };
+    res.status(201).json(output);
+  } catch (e) {
+    next(e.message);
+  }
+}
+
+async function handleSignin(req, res) {
+  const user = {
+    user: req.user,
+    token: req.user.token,
+  };
+  res.status(200).json(user);
+}
+
+
+async function handleUsers(req, res, next) {
+  const userRecords = await users.findAll({});
+  const list = userRecords.map(user => user.username);
+  res.status(200).json(list);
+}
 
 module.exports = router;
