@@ -6,7 +6,7 @@ const bearerAuth = require('../auth/middleware/bearer');
 const router = express.Router();
 const { users } = require('../auth/models');
 const basicAuth = require('../auth/middleware/basic');
-const permissions = require('../auth/middleware/acl.js');
+
 
 
 router.param('model', (req, res, next) => {
@@ -21,12 +21,12 @@ router.param('model', (req, res, next) => {
 router.get('/secret', bearerAuth, handleSecret);
 router.post('/signup', handleSignup);
 router.post('/signin', basicAuth, handleSignin);
-router.get('/users', bearerAuth, permissions('delete'), handleUsers);
-router.get('/:model', handleGetAll);
-router.get('/:model/:id', handleGetOne);
-router.post('/:model', handleCreate);
-router.put('/:model/:id', handleUpdate);
-router.delete('/:model/:id', handleDelete);
+router.get('/users', bearerAuth, handleUsers);
+router.get('/:model', bearerAuth, handleGetAll);
+router.get('/:model/:id', bearerAuth, handleGetOne);
+router.post('/:model', bearerAuth, handleCreate);
+router.put('/:model/:id', bearerAuth, handleUpdate);
+router.delete('/:model/:id', bearerAuth, handleDelete);
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();

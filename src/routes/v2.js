@@ -23,11 +23,11 @@ router.get('/secret', bearerAuth, handleSecret);
 router.post('/signup', handleSignup);
 router.post('/signin', basicAuth, handleSignin);
 router.get('/users', bearerAuth, permissions('delete'), handleUsers);
-router.get('/:model', permissions('read'), handleGetAll);
-router.get('/:model/:id',permissions('read'), handleGetOne);
-router.post('/:model',permissions('create'), handleCreate);
-router.put('/:model/:id',permissions('update'), handleUpdate);
-router.delete('/:model/:id', permissions('delete'), handleDelete);
+router.get('/:model', bearerAuth, permissions('read'), handleGetAll);
+router.get('/:model/:id', bearerAuth, permissions('read'), handleGetOne);
+router.post('/:model', bearerAuth, permissions('create'), handleCreate);
+router.put('/:model/:id', bearerAuth, permissions('update'), handleUpdate);
+router.delete('/:model/:id', bearerAuth, permissions('delete'), handleDelete);
 
 async function handleGetAll(req, res) {
   let allRecords = await req.model.get();
