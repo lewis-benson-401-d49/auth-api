@@ -23,13 +23,17 @@ class DataCollection {
     return this.model.create(record);
   }
 
-  update(id, data) {
-    return this.model.findOne({ where: { id } })
-      .then(record => record.update(data));
+  async update(id, data) {
+    try {
+      const record = await this.model.findOne({ where: { id } })
+      await record.update(data);
+    } catch (e) {
+      console.error(e.message);
+    }
   }
 
   delete(id) {
-    return this.model.destroy({ where: { id }});
+    return this.model.destroy({ where: { id } });
   }
 
 }
