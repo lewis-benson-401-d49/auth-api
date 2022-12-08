@@ -6,6 +6,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const logger = require('./middleware/logger');
 const v1Routes = require('./routes/v1');
+const v2Routes = require('./routes/v2');
 // Esoteric Resources
 const errorHandler = require('./error-handlers/500.js');
 const notFound = require('./error-handlers/404.js');
@@ -25,6 +26,7 @@ app.use(logger);
 
 // Routes
 app.use('/api/v1', v1Routes);
+app.use('/api/v2', v2Routes);
 // app.use(authRoutes);
 
 // Catchalls

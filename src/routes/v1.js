@@ -18,6 +18,8 @@ router.param('model', (req, res, next) => {
     next('Invalid Model');
   }
 });
+
+
 router.get('/secret', bearerAuth, handleSecret);
 router.post('/signup', handleSignup);
 router.post('/signin', basicAuth, handleSignin);
